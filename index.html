@@ -84,7 +84,7 @@
           </div>
 
           <div class="is-size-5">
-            <span style="color: rgb(165, 165, 165);">2025</span>
+            <span style="color: rgb(165, 165, 165);">CVPR 2025</span>
           </div>
 
           <div class="column has-text-centered">
@@ -154,6 +154,7 @@
                 type="video/mp4">
       </video> -->
       <img src="./static/images/teaser.png"/>
+      <div style="margin-top: 10pt;"></div>
       <h2 class="subtitle has-text-centered">
         <span class="dnerf">InsTaG</span> learns lifelike personalized 3D talking head from few training data, attaining fast adaptation, inference, and realistic reenactment builting upon 3DGS person-specific synthesizers.
       </h2>
@@ -164,7 +165,6 @@
 
 
 <section class="section">
-
 
   <!-- <div class="container is-max-desktop">
     <div class="columns is-centered has-text-centered">
@@ -184,8 +184,11 @@
       <div class="column is-four-fifths">
         <h2 class="title is-3">Abstract</h2>
         <div class="content has-text-justified">
+          <!-- <p>
+            Despite synthesizing impressive lifelike personalized 3D talking heads, prevailing methods based on radiance fields suffer from high demands for training data and time for each new identity. 
+          </p> -->
           <p>
-            Despite exhibiting impressive performance in synthesizing lifelike personalized 3D talking heads, prevailing methods based on radiance fields suffer from high demands for training data and time for each new identity. This paper introduces InsTaG, a 3D talking head synthesis framework that allows a fast learning of realistic personalized 3D talking head from few training data. Built upon a lightweight 3DGS person-specific synthesizer with universal motion priors, InsTaG achieves high-quality and fast adaptation while preserving high-level personalization and efficiency.
+            This paper introduces InsTaG, a 3D talking head synthesis framework that allows a fast learning of realistic personalized 3D talking head from few training data. Built upon a lightweight 3DGS person-specific synthesizer with universal motion priors, InsTaG achieves high-quality and fast adaptation while preserving high-level personalization and efficiency.
           </p>
           <p>
             As preparation, we first propose an Identity-Free Pre-training strategy that enables the pre-training of the person-specific model and encourages the collection of universal motion priors from long-video data corpus. To fully exploit the universal motion priors to learn an unseen new identity, we then present a Motion-Aligned Adaptation strategy to adaptively align the target head to the pre-trained field, and constrain a robust dynamic head structure under few training data. 
@@ -221,7 +224,7 @@
     <div class="columns is-centered has-text-centered">
       <div class="column is-full-width">
 
-        <h2 class="title is-3">Method</h2>
+        <h2 class="title is-3">Framework</h2>
         <div class="content has-text-centered">
           <img src="./static/images/main.png">
         </div>
@@ -246,19 +249,24 @@
           </p>
         </div>
         <!-- <h5 class="title is-5">LLFF</h5> -->
+
+        <div class="content has-text-centered">
+          <img src="./static/images/table1.png" style="width: 95%; margin-bottom: 2em">
+        </div>
+
+
         <div class="content has-text-centered">
           <img src="./static/images/quali1.png">
         </div>
         <div class="content has-text-centered">
           <img src="./static/images/quali2.png">
         </div>
-        <div class="content has-text-centered">
-          <img src="./static/images/table1.png">
-        </div>
 
-        <div class="content has-text-centered">
+
+
+        <!-- <div class="content has-text-centered">
           <img src="./static/images/table2.png">
-        </div>
+        </div> -->
       </div>
     </div>
 
@@ -271,12 +279,12 @@
 <section class="section" id="BibTeX">
   <div class="container is-max-desktop content">
     <h2 class="title">BibTeX</h2>
-     <!-- <pre><code>@article{li2024talkinggaussian,
-    title={TalkingGaussian: Structure-Persistent 3D Talking Head Synthesis via Gaussian Splatting}, 
-    author={Jiahe Li and Jiawei Zhang and Xiao Bai and Jin Zheng and Xin Ning and Jun Zhou and Lin Gu},
-    journal={arXiv preprint arXiv:2404.15264},
-    year={2024}
-}</code></pre> -->
+     <pre><code>@inproceedings{li2025instag,
+    title={InsTaG: Learning Personalized 3D Talking Head from Few-Second Video}, 
+    author={Li, Jiahe and Zhang, Jiawei and Bai, Xiao and Zheng, Jin and Zhou, Jun and Gu, Lin},
+    booktitle={Proceedings of the IEEE/CVF conference on computer vision and pattern recognition},
+    year={2025}
+}</code></pre>
   </div>
 </section>
 
