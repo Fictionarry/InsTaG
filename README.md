@@ -1,12 +1,12 @@
 # InsTaG: Learning Personalized 3D Talking Head from Few-Second Video
 
-This is the official repository for our paper **InsTaG: Learning Personalized 3D Talking Head from Few-Second Video**.
+This is the official repository for our CVPR 2025 paper **InsTaG: Learning Personalized 3D Talking Head from Few-Second Video**.
 
 [Paper]() | [Project](https://fictionarry.github.io/InsTaG/) | [Video]()
 
 ![image](./assets/main.png)
 
-Code will be released in days. Stay tuned!
+🚧 **Code will be released in days. Stay tuned!** 🚧
 
 ## Installation
 
@@ -129,7 +129,7 @@ bash scripts/train_xx_few_con.sh data/<ID> output/<project_name> <GPU_ID>
 python synthesize_fuse.py -S data/<ID> -M output/<project_name> --eval  
 ```
 
-### Inference with target audio
+### Inference with Specific Audio
 
 ```bash
 python synthesize_fuse.py -S data/<ID> -M output/<project_name> --use_train --audio <preprocessed_audio_feature>.npy
@@ -140,10 +140,15 @@ python synthesize_fuse.py -S data/<ID> -M output/<project_name> --use_train --au
 Consider citing as below if you find this repository helpful to your project:
 
 ```
-
+@inproceedings{li2025instag,
+    title={InsTaG: Learning Personalized 3D Talking Head from Few-Second Video}, 
+    author={Li, Jiahe and Zhang, Jiawei and Bai, Xiao and Zheng, Jin and Zhou, Jun and Gu, Lin},
+    booktitle={Proceedings of the IEEE/CVF conference on computer vision and pattern recognition},
+    year={2025}
+}
 ```
 
 
 ## Acknowledgement
 
-This code is developed on [gaussian-splatting](https://github.com/graphdeco-inria/gaussian-splatting) with [simple-knn](https://gitlab.inria.fr/bkerbl/simple-knn), and a modified [diff-gaussian-rasterization](https://github.com/ashawkey/diff-gaussian-rasterization). Partial codes are from [RAD-NeRF](https://github.com/ashawkey/RAD-NeRF), [DFRF](https://github.com/sstzal/DFRF), [GeneFace](https://github.com/yerfor/GeneFace), and [AD-NeRF](https://github.com/YudongGuo/AD-NeRF). Teeth mask is from [EasyPortrait](https://github.com/hukenovs/easyportrait). Thanks for these great projects!
+This code is developed on [gaussian-splatting](https://github.com/graphdeco-inria/gaussian-splatting) with [simple-knn](https://gitlab.inria.fr/bkerbl/simple-knn), and a modified [diff-gaussian-rasterization](https://github.com/ashawkey/diff-gaussian-rasterization). Partial codes are from [RAD-NeRF](https://github.com/ashawkey/RAD-NeRF), [DFRF](https://github.com/sstzal/DFRF), [GeneFace](https://github.com/yerfor/GeneFace), and [AD-NeRF](https://github.com/YudongGuo/AD-NeRF). Teeth mask is from [EasyPortrait](https://github.com/hukenovs/easyportrait). Geometry priors are from [sapiens](https://github.com/facebookresearch/sapiens/blob/main/lite/README.md). Thanks for these great projects!
