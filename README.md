@@ -2,7 +2,7 @@
 
 This is the official repository for our CVPR 2025 paper **InsTaG: Learning Personalized 3D Talking Head from Few-Second Video**.
 
-[Paper]() | [Project](https://fictionarry.github.io/InsTaG/) | [Video]()
+[Paper](https://arxiv.org/abs/2502.20387) | [Project](https://fictionarry.github.io/InsTaG/) | [Video](https://www.youtube.com/watch?v=CJ9aUwPyspg)
 
 ![image](./assets/main.png)
 
