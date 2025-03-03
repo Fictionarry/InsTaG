@@ -1,0 +1,48 @@
+name: instag
+channels:
+  - pytorch
+  - nvidia
+  - conda-forge
+  - defaults
+dependencies:
+  - pytorch-cuda=12.1
+  - plyfile=0.8.1
+  - python=3.9
+  - pip=22.3.1
+  - pytorch=2.1.1
+  - torchaudio=2.1.1
+  - torchvision=0.16.1
+  - tqdm
+  - ffmpeg
+  - openh264
+  - mkl=2023.0
+  - pip:
+    - ./submodules/diff-gaussian-rasterization
+    - ./submodules/simple-knn
+    - ./gridencoder
+    - numpy==1.24.3
+    - pillow==9.5.0
+    - scipy
+    - tensorboard
+    - opencv-python
+    - tensorboardX
+
+    - pandas
+    - tqdm
+    - matplotlib
+    - rich
+    - packaging
+    - scikit-learn
+
+    - face_alignment
+    - python_speech_features
+    - numba
+    - resampy
+    - pyaudio
+    - soundfile
+    - configargparse
+
+    - lpips
+    - imageio-ffmpeg
+    - librosa
+    - transformers==4.30.2
