@@ -1,10 +1,10 @@
 # InsTaG: Learning Personalized 3D Talking Head from Few-Second Video
 
-This is the official code repository for our CVPR 2025 paper **InsTaG: Learning Personalized 3D Talking Head from Few-Second Video**.
+Official repository for our CVPR 2025 paper **InsTaG: Learning Personalized 3D Talking Head from Few-Second Video**.
 
 [`Paper`](https://arxiv.org/abs/2502.20387) | [`Project`](https://fictionarry.github.io/InsTaG/) | [`Video`](https://www.youtube.com/watch?v=CJ9aUwPyspg)
 
-![image](./assets/main.png)
+<img src="./assets/main.png" alt="image" style="zoom:80%;" />
 
 ## Installation
 
@@ -159,7 +159,6 @@ In our paper, we use DeepSpeech features for evaluation. Additionally, we find A
   # No operation needed in this step. 
   ```
 
-  
 - HuBERT
   
   Good generalizability for non-English languages like Chinese and other OOD situations. Work better with a longer training video.
