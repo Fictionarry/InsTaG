@@ -215,7 +215,7 @@ Here are some options that may help customization. Some defaults are set in the 
   
 - `--N_views`: For training only. The number of frames used in training, 25 frames per second. `-1` denotes using all the training clip.
 
-- `--long`: For training only. Specify it if data is sufficient, i.e., using minutes or longer video for training. Geometry regularization is bidden under such mode with `--N_views -1`, so you can skip the generating of geometry priors. 
+- `--long`: For training only. Specify it if data is sufficient, i.e., using minutes or longer video for training. Geometry regularization is forbidden under such mode with `--N_views -1`, so you can skip the generating of geometry priors. 
 
 - `--all_for_train`: For training only. Merge training and test clip together to train the model. Note that after specifying this, the reported metrics will become invalid.
 
