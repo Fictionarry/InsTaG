@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  instag:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: instag-training
+    container_name: instag-training
+    volumes:
+      # Mount the data directory
+      - ./data:/app/data
+      # Mount the output directory
+      - ./output:/app/output
+      # Optional: Mount a local directory for scripts
+      - ./scripts:/app/scripts
+      # Optional: Mount custom user code
+      # - ./custom:/app/custom
+    environment:
+      # Ensures NVIDIA GPU is visible
+      - NVIDIA_VISIBLE_DEVICES=all
+    # Use the NVIDIA Container Runtime
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    # Start with an interactive shell
+    stdin_open: true
+    tty: true
+    # Keeps the container running
+    command: bash
+    
+  sapiens:
+    build:
+      context: .
+      dockerfile: Dockerfile.sapiens
+    image: instag-sapiens
+    container_name: instag-sapiens
+    volumes:
+      # Mount the data directory
+      - ./data:/app/data
+      # Mount the output directory
+      - ./output:/app/output
+      # Optional: Mount a local directory for scripts
+      - ./scripts:/app/scripts
+    environment:
+      # Ensures NVIDIA GPU is visible
+      - NVIDIA_VISIBLE_DEVICES=all
+    # Use the NVIDIA Container Runtime
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    # Start with an interactive shell
+    stdin_open: true
+    tty: true
+    # Keeps the container running
+    command: bash 
