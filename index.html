@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <meta charset="utf-8">
-  <meta name="description"
-        content="InsTaG: Learning Personalized 3D Talking Head from Few-Second Video.">
+  <meta name="description" content="InsTaG: Learning Personalized 3D Talking Head from Few-Second Video.">
   <meta name="keywords" content="Nerfies, D-NeRF, NeRF">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>InsTaG: Learning Personalized 3D Talking Head from Few-Second Video</title>
@@ -22,15 +22,13 @@
     gtag('config', 'G-PYVRSFMDRL');
   </script>
 
-  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
-        rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
 
   <link rel="stylesheet" href="./static/css/bulma.min.css">
   <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
   <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
   <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
-  <link rel="stylesheet"
-        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
   <link rel="stylesheet" href="./static/css/index.css">
   <!-- <link rel="icon" href="./static/images/favicon.svg"> -->
 
@@ -40,96 +38,141 @@
   <script src="./static/js/bulma-slider.min.js"></script>
   <script src="./static/js/index.js"></script>
 </head>
+
 <body>
 
-<section class="hero">
-  <div class="hero-body">
-    <div class="container is-max-desktop">
-      <div class="columns is-centered">
-        <div class="column has-text-centered">
-          <h1 class="title is-2 publication-title">InsTaG: Learning Personalized 3D Talking Head from Few-Second Video</h1>
-          <div class="is-size-5 publication-authors">
-            <span class="author-block">
-              <a href="https://scholar.google.com/citations?hl=en&user=XG-o7LUAAAAJ" target="_blank">
-                Jiahe Li</a><sup>1</sup>,
-            </span>
-            <span class="author-block">
-              <a href="https://scholar.google.com/citations?user=WeRMtW4AAAAJ&hl=en" target="_blank">
-                Jiawei Zhang</a><sup>1</sup>,
-            </span>
-            <span class="author-block">
-              <a href="https://scholar.google.com/citations?user=k6l1vZIAAAAJ&hl=en" target="_blank">
-                Xiao Bai</a><sup>1,*</sup>,
-            </span>
-            <span class="author-block">
-              <a>
-                Jin Zheng</a><sup>1</sup>,
-            </span>
+  <nav class="navbar" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+      <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </a>
+    </div>
+    <div class="navbar-menu">
+      <div class="navbar-start" style="flex-grow: 1; justify-content: center;">
+        <a class="navbar-item" href="https://keunhong.com">
+          <span class="icon">
+            <i class="fas fa-home"></i>
+          </span>
+        </a>
 
-            <span class="author-block">
-              <a href="https://scholar.google.com/citations?user=6hOOxw0AAAAJ&hl=en" target="_blank">
-                Jun Zhou</a><sup>2</sup>,
-            </span>
-            <span class="author-block">
-              <a href="https://scholar.google.com/citations?user=gIEZe5IAAAAJ&hl=en" target="_blank">
-                Lin Gu</a><sup>3,4</sup>
-            </span>
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link">
+            More Research
+          </a>
+          <div class="navbar-dropdown">
+            <a class="navbar-item" href="https://fictionarry.github.io/ER-NeRF/" target="_blank">
+              ER-NeRF
+            </a>
+            <a class="navbar-item" href="https://fictionarry.github.io/TalkingGaussian/" target="_blank">
+              TalkingGaussian
+            </a>
+            <!-- <a class="navbar-item" href="https://fictionarry.github.io/InsTaG/" target="_blank">
+              InsTaG
+            </a> -->
+            <a class="navbar-item" href="https://fictionarry.github.io/DNGaussian/" target="_blank">
+              DNGaussian
+            </a>
+            <a class="navbar-item" href="https://jiaw-z.github.io/CoR-GS/" target="_blank">
+              CoR-GS
+            </a>
           </div>
+        </div>
+      </div>
 
-          <div class="is-size-5 publication-authors">
-            <span class="author-block"><sup>1</sup>Beihang University,</span>
-            <span class="author-block"><sup>2</sup>Griffith University,</span> 
-            <span class="author-block"><sup>3</sup>RIKEN AIP,</span>
-            <span class="author-block"><sup>4</sup>The University of Tokyo</span>
-          </div>
+    </div>
+  </nav>
 
-          <div class="is-size-5">
-            <span style="color: rgb(165, 165, 165);">CVPR 2025</span>
-          </div>
-
+  <section class="hero">
+    <div class="hero-body">
+      <div class="container is-max-desktop">
+        <div class="columns is-centered">
           <div class="column has-text-centered">
-            <div class="publication-links">
-              <!-- PDF Link. -->
-              <span class="link-block">
-                <a href="https://arxiv.org/pdf/2502.20387" target="_blank"
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
+            <h1 class="title is-2 publication-title">InsTaG: Learning Personalized 3D Talking Head from Few-Second Video
+            </h1>
+            <div class="is-size-5 publication-authors">
+              <span class="author-block">
+                <a href="https://scholar.google.com/citations?hl=en&user=XG-o7LUAAAAJ" target="_blank">
+                  Jiahe Li</a><sup>1</sup>,
+              </span>
+              <span class="author-block">
+                <a href="https://scholar.google.com/citations?user=WeRMtW4AAAAJ&hl=en" target="_blank">
+                  Jiawei Zhang</a><sup>1</sup>,
+              </span>
+              <span class="author-block">
+                <a href="https://scholar.google.com/citations?user=k6l1vZIAAAAJ&hl=en" target="_blank">
+                  Xiao Bai</a><sup>1,*</sup>,
+              </span>
+              <span class="author-block">
+                <a>
+                  Jin Zheng</a><sup>1</sup>,
+              </span>
+
+              <span class="author-block">
+                <a href="https://scholar.google.com/citations?user=6hOOxw0AAAAJ&hl=en" target="_blank">
+                  Jun Zhou</a><sup>2</sup>,
+              </span>
+              <span class="author-block">
+                <a href="https://scholar.google.com/citations?user=gIEZe5IAAAAJ&hl=en" target="_blank">
+                  Lin Gu</a><sup>3,4</sup>
+              </span>
+            </div>
+
+            <div class="is-size-5 publication-authors">
+              <span class="author-block"><sup>1</sup>Beihang University,</span>
+              <span class="author-block"><sup>2</sup>Griffith University,</span>
+              <span class="author-block"><sup>3</sup>RIKEN AIP,</span>
+              <span class="author-block"><sup>4</sup>The University of Tokyo</span>
+            </div>
+
+            <div class="is-size-5">
+              <span style="color: rgb(165, 165, 165);">CVPR 2025</span>
+            </div>
+
+            <div class="column has-text-centered">
+              <div class="publication-links">
+                <!-- PDF Link. -->
+                <span class="link-block">
+                  <a href="https://arxiv.org/pdf/2502.20387" target="_blank"
+                    class="external-link button is-normal is-rounded is-dark">
+                    <span class="icon">
                       <i class="fas fa-file-pdf"></i>
-                  </span>
-                  <span>Paper</span>
-                </a>
-              </span>
-              <span class="link-block">
-                <a href="https://arxiv.org/abs/2502.20387" target="_blank"
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                      <i class="ai ai-arxiv"></i>
-                  </span>
-                  <span>arXiv</span>
-                </a>
-              </span>
-              <!-- Video Link. -->
-              <span class="link-block">
-                <a href="https://www.youtube.com/watch?v=CJ9aUwPyspg" target="_blank"
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                      <i class="fab fa-youtube"></i>
-                  </span>
-                  <span>Video</span>
-                </a>
-              </span>
-              <!-- Code Link. -->
-              <span class="link-block">
-                <a href="https://github.com/Fictionarry/InsTaG" target="_blank"
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                      <i class="fab fa-github"></i>
-                  </span>
-                  <span>Code</span>
+                    </span>
+                    <span>Paper</span>
                   </a>
-              </span>
-              <!-- Dataset Link. -->
-              <!-- <span class="link-block">
+                </span>
+                <span class="link-block">
+                  <a href="https://arxiv.org/abs/2502.20387" target="_blank"
+                    class="external-link button is-normal is-rounded is-dark">
+                    <span class="icon">
+                      <i class="ai ai-arxiv"></i>
+                    </span>
+                    <span>arXiv</span>
+                  </a>
+                </span>
+                <!-- Video Link. -->
+                <span class="link-block">
+                  <a href="https://www.youtube.com/watch?v=CJ9aUwPyspg" target="_blank"
+                    class="external-link button is-normal is-rounded is-dark">
+                    <span class="icon">
+                      <i class="fab fa-youtube"></i>
+                    </span>
+                    <span>Video</span>
+                  </a>
+                </span>
+                <!-- Code Link. -->
+                <span class="link-block">
+                  <a href="https://github.com/Fictionarry/InsTaG" target="_blank"
+                    class="external-link button is-normal is-rounded is-dark">
+                    <span class="icon">
+                      <i class="fab fa-github"></i>
+                    </span>
+                    <span>Code</span>
+                  </a>
+                </span>
+                <!-- Dataset Link. -->
+                <!-- <span class="link-block">
                 <a href="https://github.com/google/nerfies/releases/tag/0.1"
                    class="external-link button is-normal is-rounded is-dark">
                   <span class="icon">
@@ -137,182 +180,193 @@
                   </span>
                   <span>Data</span>
                   </a> -->
-            </div>
+              </div>
 
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<section class="hero teaser">
-  <div class="container is-max-desktop">
-    <div class="hero-body">
-      <!-- <video id="teaser" autoplay muted loop playsinline height="100%">
+  <section class="hero teaser">
+    <div class="container is-max-desktop">
+      <div class="hero-body">
+        <!-- <video id="teaser" autoplay muted loop playsinline height="100%">
         <source src="./static/videos/teaser.mp4"
                 type="video/mp4">
       </video> -->
-      <img src="./static/images/teaser.png"/>
-      <div style="margin-top: 10pt;"></div>
-      <h2 class="subtitle has-text-centered">
-        <span class="dnerf">InsTaG</span> learns lifelike personalized 3D talking head from few training data, attaining fast adaptation, inference, and realistic reenactment building upon 3DGS person-specific synthesizers.
-      </h2>
+        <img src="./static/images/teaser.png" />
+        <div style="margin-top: 10pt;"></div>
+        <h2 class="subtitle has-text-centered">
+          <span class="dnerf">InsTaG</span> learns lifelike personalized 3D talking head from few training data,
+          attaining fast adaptation, inference, and realistic reenactment building upon 3DGS person-specific
+          synthesizers.
+        </h2>
+      </div>
     </div>
-  </div>
-</section>
+  </section>
 
 
 
-<section class="section">
+  <section class="section">
 
-  <div class="container is-max-desktop">
-    <div class="columns is-centered has-text-centered">
-      <h2 class="title is-4">Demo</h2>
+    <div class="container is-max-desktop">
+      <div class="columns is-centered has-text-centered">
+        <h2 class="title is-4">Demo</h2>
+      </div>
+      <div class="hero-body">
+        <video id="replay-video" preload playsinline controls height="80%">
+          <source src="./static/videos/vid_short_out.mp4" type="video/mp4">
+        </video>
+        <!-- <p style="font-size:14px; ">* HTML player may encounter audio video sync problem. May manually jump the progress bar to align the timestamps.</p> -->
+      </div>
     </div>
-    <div class="hero-body">
-      <video id="replay-video" preload playsinline controls height="80%">
-        <source src="./static/videos/vid_short_out.mp4"
-                type="video/mp4">
-      </video>
-      <!-- <p style="font-size:14px; ">* HTML player may encounter audio video sync problem. May manually jump the progress bar to align the timestamps.</p> -->
-    </div>
-  </div>
 
-  <div class="container is-max-desktop">
-    <!-- Abstract. -->
-    <div class="columns is-centered has-text-centered">
-      <div class="column is-four-fifths">
-        <h2 class="title is-3">Abstract</h2>
-        <div class="content has-text-justified">
-          <!-- <p>
+    <div class="container is-max-desktop">
+      <!-- Abstract. -->
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-four-fifths">
+          <h2 class="title is-3">Abstract</h2>
+          <div class="content has-text-justified">
+            <!-- <p>
             Despite synthesizing impressive lifelike personalized 3D talking heads, prevailing methods based on radiance fields suffer from high demands for training data and time for each new identity. 
           </p> -->
-          <p>
-            This paper introduces InsTaG, a 3D talking head synthesis framework that allows a fast learning of realistic personalized 3D talking head from few training data. Built upon a lightweight 3DGS person-specific synthesizer with universal motion priors, InsTaG achieves high-quality and fast adaptation while preserving high-level personalization and efficiency.
-          </p>
-          <p>
-            As preparation, we first propose an Identity-Free Pre-training strategy that enables the pre-training of the person-specific model and encourages the collection of universal motion priors from long-video data corpus. To fully exploit the universal motion priors to learn an unseen new identity, we then present a Motion-Aligned Adaptation strategy to adaptively align the target head to the pre-trained field, and constrain a robust dynamic head structure under few training data. 
-          </p>
-          <p>
-            Extensive experiments demonstrate our outstanding performance and efficiency under various data scenarios to render high-quality personalized talking head videos.
-          </p>
+            <p>
+              This paper introduces InsTaG, a 3D talking head synthesis framework that allows a fast learning of
+              realistic personalized 3D talking head from few training data. Built upon a lightweight 3DGS
+              person-specific synthesizer with universal motion priors, InsTaG achieves high-quality and fast adaptation
+              while preserving high-level personalization and efficiency.
+            </p>
+            <p>
+              As preparation, we first propose an Identity-Free Pre-training strategy that enables the pre-training of
+              the person-specific model and encourages the collection of universal motion priors from long-video data
+              corpus. To fully exploit the universal motion priors to learn an unseen new identity, we then present a
+              Motion-Aligned Adaptation strategy to adaptively align the target head to the pre-trained field, and
+              constrain a robust dynamic head structure under few training data.
+            </p>
+            <p>
+              Extensive experiments demonstrate our outstanding performance and efficiency under various data scenarios
+              to render high-quality personalized talking head videos.
+            </p>
+          </div>
         </div>
       </div>
-    </div>
-    <!--/ Abstract. -->
+      <!--/ Abstract. -->
 
 
-    <!-- Paper video. -->
-    <div class="columns is-centered has-text-centered">
-      <div class="column is-four-fifths">
-        <h2 class="title is-3">Video</h2>
-        <div class="publication-video">
-          <iframe src="https://www.youtube.com/embed/CJ9aUwPyspg"
-                  frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+      <!-- Paper video. -->
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-four-fifths">
+          <h2 class="title is-3">Video</h2>
+          <div class="publication-video">
+            <iframe src="https://www.youtube.com/embed/CJ9aUwPyspg" frameborder="0" allow="autoplay; encrypted-media"
+              allowfullscreen></iframe>
+          </div>
         </div>
       </div>
+      <!-- / Paper video. -->
     </div>
-    <!-- / Paper video. -->
-  </div>
-</section>
+  </section>
 
 
-<section class="section">
-  <div class="container is-max-desktop">
+  <section class="section">
+    <div class="container is-max-desktop">
 
-    <!-- Method. -->
-    <div class="columns is-centered has-text-centered">
-      <div class="column is-full-width">
+      <!-- Method. -->
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-full-width">
 
-        <h2 class="title is-3">Framework</h2>
-        <div class="content has-text-centered">
-          <img src="./static/images/main.png">
-        </div>
-        <div class="content has-text-justified">
-          <p>
-            For preparation, InsTaG collects the common knowledge of talking motion from a long-video corpus by 
-            Identity-Free Pre-training, storing it as a motion field. Given a short video with new identity, Motion-Aligned Adaptation strategy 
-            builds a robust and fast person-specific synthesizer with the pre-trained motion field to learn a high-quality personalized 3D talking head.
-          </p>
+          <h2 class="title is-3">Framework</h2>
+          <div class="content has-text-centered">
+            <img src="./static/images/main.png">
+          </div>
+          <div class="content has-text-justified">
+            <p>
+              For preparation, InsTaG collects the common knowledge of talking motion from a long-video corpus by
+              Identity-Free Pre-training, storing it as a motion field. Given a short video with new identity,
+              Motion-Aligned Adaptation strategy
+              builds a robust and fast person-specific synthesizer with the pre-trained motion field to learn a
+              high-quality personalized 3D talking head.
+            </p>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- Comparison. -->
-    <div class="columns is-centered has-text-centered">
-      <div class="column is-full-width">
+      <!-- Comparison. -->
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-full-width">
 
-        <h3 class="title is-3">Comparison</h3>
-        <div class="content has-text-justified">
-          <p>
-            Comparison with current SOTA baselines. Zoom in for better visualization.
-          </p>
-        </div>
-        <!-- <h5 class="title is-5">LLFF</h5> -->
+          <h3 class="title is-3">Comparison</h3>
+          <div class="content has-text-justified">
+            <p>
+              Comparison with current SOTA baselines. Zoom in for better visualization.
+            </p>
+          </div>
+          <!-- <h5 class="title is-5">LLFF</h5> -->
 
-        <div class="content has-text-centered">
-          <img src="./static/images/table1.png" style="width: 95%; margin-bottom: 2em">
-        </div>
-
-
-        <div class="content has-text-centered">
-          <img src="./static/images/quali1.png">
-        </div>
-        <div class="content has-text-centered">
-          <img src="./static/images/quali2.png">
-        </div>
+          <div class="content has-text-centered">
+            <img src="./static/images/table1.png" style="width: 95%; margin-bottom: 2em">
+          </div>
 
 
+          <div class="content has-text-centered">
+            <img src="./static/images/quali1.png">
+          </div>
+          <div class="content has-text-centered">
+            <img src="./static/images/quali2.png">
+          </div>
 
-        <!-- <div class="content has-text-centered">
+
+
+          <!-- <div class="content has-text-centered">
           <img src="./static/images/table2.png">
         </div> -->
+        </div>
       </div>
-    </div>
 
 
 
 
-</section>
+  </section>
 
 
-<section class="section" id="BibTeX">
-  <div class="container is-max-desktop content">
-    <h2 class="title">BibTeX</h2>
-     <pre><code>@inproceedings{li2025instag,
+  <section class="section" id="BibTeX">
+    <div class="container is-max-desktop content">
+      <h2 class="title">BibTeX</h2>
+      <pre><code>@inproceedings{li2025instag,
     title={InsTaG: Learning Personalized 3D Talking Head from Few-Second Video}, 
     author={Li, Jiahe and Zhang, Jiawei and Bai, Xiao and Zheng, Jin and Zhou, Jun and Gu, Lin},
     booktitle={Proceedings of the IEEE/CVF conference on computer vision and pattern recognition},
     year={2025}
 }</code></pre>
-  </div>
-</section>
-
-
-<footer class="footer">
-  <div class="container">
-    <div class="content has-text-centered">
-      <a class="icon-link"
-         href="https://arxiv.org/pdf/2502.20387"  target="_blank"> 
-        <i class="fas fa-file-pdf"></i>
-      </a>
-      <a class="icon-link" href="https://github.com/Fictionarry/InsTaG"  target="_blank" class="external-link" disabled>
-        <i class="fab fa-github"></i>
-      </a>
     </div>
-    <div class="columns is-centered">
-      <div class="column is-8">
-        <div class="content">
-          <p>
-            This website is developed based on <a
-              href="https://github.com/nerfies/nerfies.github.io">Nerfies</a>.
-          </p>
+  </section>
+
+
+  <footer class="footer">
+    <div class="container">
+      <div class="content has-text-centered">
+        <a class="icon-link" href="https://arxiv.org/pdf/2502.20387" target="_blank">
+          <i class="fas fa-file-pdf"></i>
+        </a>
+        <a class="icon-link" href="https://github.com/Fictionarry/InsTaG" target="_blank" class="external-link"
+          disabled>
+          <i class="fab fa-github"></i>
+        </a>
+      </div>
+      <div class="columns is-centered">
+        <div class="column is-8">
+          <div class="content">
+            <p>
+              This website is developed based on <a href="https://github.com/nerfies/nerfies.github.io">Nerfies</a>.
+            </p>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-</footer>
+  </footer>
 
 </body>
+
 </html>
