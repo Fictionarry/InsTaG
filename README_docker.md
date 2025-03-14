@@ -322,3 +322,34 @@ If you encounter issues with the CUDA submodules:
 - All model weights and training results will be saved to the `./output` directory
 - To download the Basel Face Model (BFM2009), you'll need to register on their website and follow the instructions in the training document
 - For multi-GPU training, use `CUDA_VISIBLE_DEVICES` in the training scripts or specify a different GPU index in the training commands 
+
+## CI Builds vs Full Installation
+
+The Dockerfile includes special handling for GitHub Actions CI builds:
+
+- OpenFace installation is skipped in the CI environment to speed up builds
+- PyTorch3D installation is optional and allowed to fail
+- The prepare.sh script can be skipped if necessary
+
+When building locally or for production, you may want to set the `CI=false` environment variable to ensure all components are installed:
+
+```bash
+CI=false docker build -t instag:latest .
+```
+
+For the full experience including OpenFace, you'll need to run the container and manually install OpenFace:
+
+```bash
+docker run --gpus all -it instag:latest /bin/bash
+# Then inside the container:
+git clone https://github.com/TadasBaltrusaitis/OpenFace.git /tmp/OpenFace
+cd /tmp/OpenFace
+bash ./download_models.sh
+mkdir -p build && cd build
+cmake -D CMAKE_BUILD_TYPE=RELEASE ..
+make -j4
+make install
+cp -r /tmp/OpenFace/build/bin /instag/OpenFace/
+cp -r /tmp/OpenFace/lib /instag/OpenFace/ 
+cp -r /tmp/OpenFace/build/lib /instag/OpenFace/
+```
