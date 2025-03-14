@@ -50,7 +50,7 @@ RUN conda create -n instag python=3.9 -y \
  && echo "source activate instag" > ~/.bashrc
 
 # Install PyTorch with conda run to avoid activation issues
-RUN conda run -n instag conda install pytorch==1.13.1 torchvision==0.14.1 cudatoolkit=11.7 -c pytorch -y
+RUN conda run -n instag conda install pytorch==1.13.1 torchvision==0.14.1 cudatoolkit=11.7 -c pytorch -c nvidia -c conda-forge -y
 
 # Clone InsTaG repository
 RUN git lfs install \
