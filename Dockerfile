@@ -1,4 +1,4 @@
-# Version: 1.2.0 (Build Fix)
+# Version: 1.3.0 (Production Ready)
 ARG BASE_IMAGE=nvcr.io/nvidia/cuda:11.7.1-cudnn8-devel-ubuntu20.04
 FROM $BASE_IMAGE
 
@@ -81,26 +81,44 @@ RUN conda run -n instag bash -c "cd /instag/shencoder && pip install -e ."
 # Install PyTorch3D dependencies
 RUN conda run -n instag pip install "fvcore>=0.1.5" "iopath>=0.1.7" "nvidiacub-dev"
 
-# Try to install PyTorch3D from source, but don't fail if it doesn't work
-RUN conda run -n instag pip install "pytorch3d==0.7.4" || echo "PyTorch3D installation failed, but continuing build"
+# Install PyTorch3D with maximum compatibility
+RUN conda run -n instag bash -c "\
+    pip install --no-cache-dir pytorch3d==0.7.4 || \
+    pip install --no-cache-dir 'git+https://github.com/facebookresearch/pytorch3d.git@stable' || \
+    echo 'PyTorch3D installation failed, but continuing. You can install it manually later.'"
 
 # Install TensorFlow
 RUN conda run -n instag pip install tensorflow-gpu==2.10.0
 
-# Skip OpenFace installation in CI environments for speed (can be installed manually later)
-RUN mkdir -p /instag/OpenFace/bin
+# Install OpenFace (critical for training)
+# Split into multiple steps to avoid timeout issues
+RUN mkdir -p /instag/OpenFace \
+    && git clone https://github.com/TadasBaltrusaitis/OpenFace.git /tmp/OpenFace
 
-# Create a dummy OpenFace executable so scripts don't fail 
-RUN echo '#!/bin/bash\necho "OpenFace not installed in this container. Please install manually if needed."' > /instag/OpenFace/bin/FeatureExtraction \
- && chmod +x /instag/OpenFace/bin/FeatureExtraction
+# Download models 
+RUN cd /tmp/OpenFace && bash ./download_models.sh
+
+# Build OpenFace with all cores for speed
+RUN cd /tmp/OpenFace \
+    && mkdir -p build \
+    && cd build \
+    && cmake -D CMAKE_BUILD_TYPE=RELEASE .. \
+    && make -j$(nproc) \
+    && make install
+
+# Copy binaries and libraries to our OpenFace directory
+RUN cp -r /tmp/OpenFace/build/bin /instag/OpenFace/ \
+    && cp -r /tmp/OpenFace/lib /instag/OpenFace/ \
+    && cp -r /tmp/OpenFace/build/lib /instag/OpenFace/ \
+    && rm -rf /tmp/OpenFace
 
 # Download EasyPortrait model
 RUN mkdir -p /instag/data_utils/easyportrait \
  && conda run -n instag wget -O /instag/data_utils/easyportrait/fpn-fp-512.pth \
     https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/easyportrait/experiments/models/fpn-fp-512.pth
 
-# Run prepare script to download required models (continue even if it fails)
-RUN cd /instag && bash scripts/prepare.sh || echo "Prepare script failed, but continuing build"
+# Run prepare script to download required models (critical for training)
+RUN cd /instag && bash scripts/prepare.sh
 
 # Create the Sapiens lite environment
 RUN conda create -n sapiens_lite python=3.10 -y \
