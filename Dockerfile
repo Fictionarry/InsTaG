@@ -59,8 +59,13 @@ RUN conda config --append channels conda-forge \
  && echo "source activate instag" > ~/.bashrc
 
 # Install dependencies for InsTaG
-RUN conda run -n instag pip install -r requirements.txt \
- && conda run -n instag bash -c "cd /instag/submodules/diff-gaussian-rasterization && FORCE_CUDA=1 pip install -e ." \
+RUN conda run -n instag pip install -r requirements.txt
+
+# Install MMCV with specific CUDA version
+RUN conda run -n instag pip install mmcv-full==1.7.1 -f https://download.openmmlab.com/mmcv/dist/cu117/torch1.13.0/index.html
+
+# Install submodules and other dependencies
+RUN conda run -n instag bash -c "cd /instag/submodules/diff-gaussian-rasterization && FORCE_CUDA=1 pip install -e ." \
  && conda run -n instag bash -c "cd /instag/submodules/simple-knn && FORCE_CUDA=1 pip install -e ." \
  && conda run -n instag bash -c "cd /instag/gridencoder && pip install -e ." \
  && conda run -n instag bash -c "cd /instag/shencoder && pip install -e ." \
