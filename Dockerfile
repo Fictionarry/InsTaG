@@ -32,6 +32,11 @@ RUN apt-get update -yq --fix-missing \
     git-lfs \
     vim \
     curl \
+    libopenexr-dev \
+    openexr \
+    python3-dev \
+    libffi-dev \
+    libeigen3-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Miniconda
@@ -58,25 +63,38 @@ RUN conda config --append channels conda-forge \
  && conda create -n instag python=3.9 cudatoolkit=11.7 pytorch=1.13.1 torchvision=0.14.1 torchaudio -c pytorch -c nvidia -y \
  && echo "source activate instag" > ~/.bashrc
 
+# Print debug information
+RUN conda run -n instag python -c "import torch; print('PyTorch version:', torch.__version__); print('CUDA available:', torch.cuda.is_available()); print('CUDA version:', torch.version.cuda if torch.cuda.is_available() else 'N/A')"
+
 # Install dependencies for InsTaG
 RUN conda run -n instag pip install -r requirements.txt
 
 # Install MMCV with specific CUDA version
 RUN conda run -n instag pip install mmcv-full==1.7.1 -f https://download.openmmlab.com/mmcv/dist/cu117/torch1.13.0/index.html
 
-# Install submodules and other dependencies
-RUN conda run -n instag bash -c "cd /instag/submodules/diff-gaussian-rasterization && FORCE_CUDA=1 pip install -e ." \
- && conda run -n instag bash -c "cd /instag/submodules/simple-knn && FORCE_CUDA=1 pip install -e ." \
- && conda run -n instag bash -c "cd /instag/gridencoder && pip install -e ." \
- && conda run -n instag bash -c "cd /instag/shencoder && pip install -e ." \
- && conda run -n instag pip install "git+https://github.com/facebookresearch/pytorch3d.git" \
- && conda run -n instag pip install tensorflow-gpu==2.10.0
+# Install CUDA submodules
+RUN conda run -n instag bash -c "cd /instag/submodules/diff-gaussian-rasterization && FORCE_CUDA=1 pip install -e ."
+RUN conda run -n instag bash -c "cd /instag/submodules/simple-knn && FORCE_CUDA=1 pip install -e ."
+RUN conda run -n instag bash -c "cd /instag/gridencoder && pip install -e ."
+RUN conda run -n instag bash -c "cd /instag/shencoder && pip install -e ."
+
+# Install PyTorch3D from pre-built binaries instead of building from source
+RUN conda run -n instag pip install --no-index --no-cache-dir pytorch3d -f https://dl.fbaipublicfiles.com/pytorch3d/packaging/wheels/py39_cu117_pyt1131/download.html
+
+# Install TensorFlow
+RUN conda run -n instag pip install tensorflow-gpu==2.10.0
 
 # Install OpenFace
-RUN conda run -n instag bash -c "git clone https://github.com/TadasBaltrusaitis/OpenFace.git /tmp/OpenFace" \
- && conda run -n instag bash -c "cd /tmp/OpenFace && bash ./download_models.sh" \
- && conda run -n instag bash -c "cd /tmp/OpenFace && mkdir -p build && cd build && cmake -D CMAKE_BUILD_TYPE=RELEASE .. && make -j4 && make install" \
- && cp -r /tmp/OpenFace/build/bin /instag/OpenFace \
+RUN mkdir -p /instag/OpenFace \
+ && git clone https://github.com/TadasBaltrusaitis/OpenFace.git /tmp/OpenFace \
+ && cd /tmp/OpenFace \
+ && bash ./download_models.sh \
+ && mkdir -p build \
+ && cd build \
+ && cmake -D CMAKE_BUILD_TYPE=RELEASE .. \
+ && make -j4 \
+ && make install \
+ && cp -r /tmp/OpenFace/build/bin /instag/OpenFace/ \
  && cp -r /tmp/OpenFace/lib /instag/OpenFace/ \
  && cp -r /tmp/OpenFace/build/lib /instag/OpenFace/ \
  && rm -rf /tmp/OpenFace
