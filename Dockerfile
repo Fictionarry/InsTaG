@@ -33,18 +33,21 @@ RUN apt-get update -yq --fix-missing \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Set up interactive shell
-SHELL ["/bin/bash", "-i", "-c"]
-
 # Install Miniconda
 RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh \
- && sh Miniconda3-latest-Linux-x86_64.sh -b -u -p ~/miniconda3 \
- && ~/miniconda3/bin/conda init \
- && source ~/.bashrc \
+ && bash Miniconda3-latest-Linux-x86_64.sh -b -p /opt/conda \
  && rm Miniconda3-latest-Linux-x86_64.sh
+
+# Add conda to PATH
+ENV PATH="/opt/conda/bin:${PATH}"
+
+# Initialize conda in bash
+RUN conda init bash
 
 # Set up environment for InsTaG
 RUN conda create -n instag python=3.9 -y \
+ && echo "source activate instag" > ~/.bashrc \
+ && . /opt/conda/etc/profile.d/conda.sh \
  && conda activate instag \
  && conda install pytorch==1.13.1 torchvision==0.14.1 cudatoolkit=11.7 -c pytorch -y
 
@@ -56,7 +59,8 @@ RUN git lfs install \
 
 # Install dependencies for InsTaG
 WORKDIR /instag
-RUN conda activate instag \
+RUN . /opt/conda/etc/profile.d/conda.sh \
+ && conda activate instag \
  && pip install -r requirements.txt \
  && cd /instag/submodules/diff-gaussian-rasterization && FORCE_CUDA=1 pip install -e . \
  && cd /instag/submodules/simple-knn && FORCE_CUDA=1 pip install -e . \
@@ -66,7 +70,8 @@ RUN conda activate instag \
  && pip install tensorflow-gpu==2.10.0
 
 # Install OpenFace
-RUN conda activate instag \
+RUN . /opt/conda/etc/profile.d/conda.sh \
+ && conda activate instag \
  && git clone https://github.com/TadasBaltrusaitis/OpenFace.git /tmp/OpenFace \
  && cd /tmp/OpenFace \
  && bash ./download_models.sh \
@@ -81,18 +86,21 @@ RUN conda activate instag \
  && rm -rf /tmp/OpenFace
 
 # Download EasyPortrait model
-RUN conda activate instag \
+RUN . /opt/conda/etc/profile.d/conda.sh \
+ && conda activate instag \
  && mkdir -p /instag/data_utils/easyportrait \
  && wget -O /instag/data_utils/easyportrait/fpn-fp-512.pth \
     https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/easyportrait/experiments/models/fpn-fp-512.pth
 
 # Run prepare script to download required models
-RUN conda activate instag \
+RUN . /opt/conda/etc/profile.d/conda.sh \
+ && conda activate instag \
  && cd /instag \
  && bash scripts/prepare.sh
 
 # Create the Sapiens lite environment
-RUN conda create -n sapiens_lite python=3.10 -y \
+RUN . /opt/conda/etc/profile.d/conda.sh \
+ && conda create -n sapiens_lite python=3.10 -y \
  && conda activate sapiens_lite \
  && conda install pytorch==2.2.1 torchvision==0.17.1 torchaudio==2.2.1 pytorch-cuda=11.7 -c pytorch -c nvidia \
  && pip install opencv-python tqdm json-tricks
@@ -101,10 +109,11 @@ RUN conda create -n sapiens_lite python=3.10 -y \
 RUN mkdir -p /instag/data /instag/output /instag/jobs
 
 # Set up environment paths
-ENV PATH="/root/miniconda3/bin:/instag/OpenFace/bin:${PATH}"
+ENV PATH="/opt/conda/bin:/instag/OpenFace/bin:${PATH}"
 
-# Set up startup script
-RUN echo 'echo "Welcome to InsTaG on RunPod\!"' > /instag/startup.sh \
+# Create startup script to activate environment
+RUN echo '#!/bin/bash' > /instag/startup.sh \
+ && echo 'echo "Welcome to InsTaG on RunPod!"' >> /instag/startup.sh \
  && echo 'echo ""' >> /instag/startup.sh \
  && echo 'echo "Available environment commands:"' >> /instag/startup.sh \
  && echo 'echo "conda activate instag    - Activate the main InsTaG environment"' >> /instag/startup.sh \
@@ -117,6 +126,8 @@ RUN echo 'echo "Welcome to InsTaG on RunPod\!"' > /instag/startup.sh \
  && echo 'echo "4. Fine-tune the model:    bash scripts/train_xx_few.sh data/<ID> output/<project_name> <GPU_ID>"' >> /instag/startup.sh \
  && echo 'echo "5. Synthesize:            python synthesize_fuse.py -S data/<ID> -M output/<project_name> --audio <path> --audio_extractor <type>"' >> /instag/startup.sh \
  && echo 'echo ""' >> /instag/startup.sh \
+ && echo 'source /opt/conda/etc/profile.d/conda.sh' >> /instag/startup.sh \
+ && echo 'conda activate instag' >> /instag/startup.sh \
  && echo 'exec bash' >> /instag/startup.sh \
  && chmod +x /instag/startup.sh
 
