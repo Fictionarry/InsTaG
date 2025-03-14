@@ -1,15 +1,25 @@
-FROM nvidia/cuda:11.7.1-cudnn8-devel-ubuntu20.04
+ARG BASE_IMAGE=nvcr.io/nvidia/cuda:11.7.1-cudnn8-devel-ubuntu20.04
+FROM $BASE_IMAGE
 
-# Prevent timezone questions during package installations
-ENV DEBIAN_FRONTEND=noninteractive
+VOLUME [ "/instag" ]
 
-# Install basic dependencies
-RUN apt-get update && apt-get install -y \
+# Install system dependencies
+RUN apt-get update -yq --fix-missing \
+ && DEBIAN_FRONTEND=noninteractive apt-get install -yq --no-install-recommends \
     git \
-    python3.9 \
-    python3.9-dev \
-    python3-pip \
     wget \
+    cmake \
+    build-essential \
+    libboost-all-dev \
+    libopenblas-dev \
+    liblapack-dev \
+    libx11-dev \
+    libopencv-dev \
+    libgtk-3-dev \
+    pkg-config \
+    libavcodec-dev \
+    libavformat-dev \
+    libswscale-dev \
     ffmpeg \
     libsm6 \
     libxext6 \
@@ -17,78 +27,101 @@ RUN apt-get update && apt-get install -y \
     libglib2.0-0 \
     libsndfile1 \
     portaudio19-dev \
-    build-essential \
-    cmake \
-    libopenblas-dev \
-    && apt-get clean \
+    ninja-build \
+    git-lfs \
+    vim \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Set Python 3.9 as default
-RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.9 1 \
-    && update-alternatives --install /usr/bin/python python /usr/bin/python3.9 1 \
-    && python -m pip install --upgrade pip
+# Set up interactive shell
+SHELL ["/bin/bash", "-i", "-c"]
 
 # Install Miniconda
-RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O /tmp/miniconda.sh \
-    && bash /tmp/miniconda.sh -b -p /opt/conda \
-    && rm /tmp/miniconda.sh
+RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh \
+ && sh Miniconda3-latest-Linux-x86_64.sh -b -u -p ~/miniconda3 \
+ && ~/miniconda3/bin/conda init \
+ && source ~/.bashrc \
+ && rm Miniconda3-latest-Linux-x86_64.sh
 
-# Add conda to path
-ENV PATH="/opt/conda/bin:${PATH}"
+# Set up environment for InsTaG
+RUN conda create -n instag python=3.9 -y \
+ && conda activate instag \
+ && conda install pytorch==1.13.1 torchvision==0.14.1 cudatoolkit=11.7 -c pytorch -y
 
-# Create a working directory
-WORKDIR /app
+# Clone InsTaG repository
+RUN git lfs install \
+ && git clone https://github.com/Fictionarry/InsTaG.git /instag \
+ && cd /instag \
+ && git submodule update --init --recursive
 
-# First, copy only the environment file to leverage Docker caching
-COPY environment_cu117.yml /app/
+# Install dependencies for InsTaG
+WORKDIR /instag
+RUN conda activate instag \
+ && pip install -r requirements.txt \
+ && cd /instag/submodules/diff-gaussian-rasterization && FORCE_CUDA=1 pip install -e . \
+ && cd /instag/submodules/simple-knn && FORCE_CUDA=1 pip install -e . \
+ && cd /instag/gridencoder && pip install -e . \
+ && cd /instag/shencoder && pip install -e . \
+ && pip install "git+https://github.com/facebookresearch/pytorch3d.git" \
+ && pip install tensorflow-gpu==2.10.0
 
-# Create conda environment
-RUN conda env create -f environment_cu117.yml
+# Install OpenFace
+RUN conda activate instag \
+ && git clone https://github.com/TadasBaltrusaitis/OpenFace.git /tmp/OpenFace \
+ && cd /tmp/OpenFace \
+ && bash ./download_models.sh \
+ && mkdir -p build \
+ && cd build \
+ && cmake -D CMAKE_BUILD_TYPE=RELEASE .. \
+ && make -j4 \
+ && make install \
+ && cp -r /tmp/OpenFace/build/bin /instag/OpenFace \
+ && cp -r /tmp/OpenFace/lib /instag/OpenFace/ \
+ && cp -r /tmp/OpenFace/build/lib /instag/OpenFace/ \
+ && rm -rf /tmp/OpenFace
 
-# Make the conda environment the default
-SHELL ["conda", "run", "-n", "instag", "/bin/bash", "-c"]
+# Download EasyPortrait model
+RUN conda activate instag \
+ && mkdir -p /instag/data_utils/easyportrait \
+ && wget -O /instag/data_utils/easyportrait/fpn-fp-512.pth \
+    https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/easyportrait/experiments/models/fpn-fp-512.pth
 
-# Install OpenFace for facial action unit extraction
-RUN git clone https://github.com/TadasBaltrusaitis/OpenFace.git /tmp/OpenFace \
-    && cd /tmp/OpenFace \
-    && bash ./download_models.sh \
-    && mkdir -p build \
-    && cd build \
-    && cmake -D CMAKE_BUILD_TYPE=RELEASE .. \
-    && make -j4 \
-    && make install \
-    && cp -r /tmp/OpenFace/build/bin /app/OpenFace \
-    && cp -r /tmp/OpenFace/lib /app/OpenFace/ \
-    && cp -r /tmp/OpenFace/build/lib /app/OpenFace/ \
-    && rm -rf /tmp/OpenFace
+# Run prepare script to download required models
+RUN conda activate instag \
+ && cd /instag \
+ && bash scripts/prepare.sh
 
-# Install additional required dependencies
-RUN pip install "git+https://github.com/facebookresearch/pytorch3d.git" || \
-    echo "PyTorch3D installation failed, please check compatibility with PyTorch version" \
-    && pip install tensorflow-gpu==2.10.0 \
-    && pip install openmim \
-    && mim install mmcv-full==1.7.1 prettytable
+# Create the Sapiens lite environment
+RUN conda create -n sapiens_lite python=3.10 -y \
+ && conda activate sapiens_lite \
+ && conda install pytorch==2.2.1 torchvision==0.17.1 torchaudio==2.2.1 pytorch-cuda=11.7 -c pytorch -c nvidia \
+ && pip install opencv-python tqdm json-tricks
 
-# Copy the repository (except for large data files)
-COPY . /app/
+# Create directories for data and outputs
+RUN mkdir -p /instag/data /instag/output /instag/jobs
 
-# Properly initialize and install submodules in one step to avoid race conditions
-RUN git submodule update --init --recursive \
-    && cd /app/submodules/diff-gaussian-rasterization && pip install -e . \
-    && cd /app/submodules/simple-knn && pip install -e . \
-    && cd /app/gridencoder && pip install -e .
+# Set up environment paths
+ENV PATH="/root/miniconda3/bin:/instag/OpenFace/bin:${PATH}"
 
-# Create directories for data and output
-RUN mkdir -p /app/data /app/output
+# Set up startup script
+RUN echo 'echo "Welcome to InsTaG on RunPod\!"' > /instag/startup.sh \
+ && echo 'echo ""' >> /instag/startup.sh \
+ && echo 'echo "Available environment commands:"' >> /instag/startup.sh \
+ && echo 'echo "conda activate instag    - Activate the main InsTaG environment"' >> /instag/startup.sh \
+ && echo 'echo "conda activate sapiens_lite - Activate the Sapiens environment for geometry priors"' >> /instag/startup.sh \
+ && echo 'echo ""' >> /instag/startup.sh \
+ && echo 'echo "Common workflows:"' >> /instag/startup.sh \
+ && echo 'echo "1. Process a video:        python data_utils/process.py data/<ID>/<ID>.mp4"' >> /instag/startup.sh \
+ && echo 'echo "2. Generate teeth masks:   python data_utils/easyportrait/create_teeth_mask.py ./data/<ID>"' >> /instag/startup.sh \
+ && echo 'echo "3. Run Sapiens (optional): bash data_utils/sapiens/run.sh ./data/<ID>"' >> /instag/startup.sh \
+ && echo 'echo "4. Fine-tune the model:    bash scripts/train_xx_few.sh data/<ID> output/<project_name> <GPU_ID>"' >> /instag/startup.sh \
+ && echo 'echo "5. Synthesize:            python synthesize_fuse.py -S data/<ID> -M output/<project_name> --audio <path> --audio_extractor <type>"' >> /instag/startup.sh \
+ && echo 'echo ""' >> /instag/startup.sh \
+ && echo 'exec bash' >> /instag/startup.sh \
+ && chmod +x /instag/startup.sh
 
-# Add a script to activate the conda environment when starting the container
-RUN echo '#!/bin/bash\neval "$(conda shell.bash hook)"\nconda activate instag\nexec "$@"' > /app/entrypoint.sh \
-    && chmod +x /app/entrypoint.sh
+# Set working directory
+WORKDIR /instag
 
-# Add OpenFace to PATH
-ENV PATH="/app/OpenFace/bin:${PATH}"
-
-ENTRYPOINT ["/app/entrypoint.sh"]
-
-# Default command keeps the container running
-CMD ["bash"] 
+# Default command
+CMD ["/instag/startup.sh"]
