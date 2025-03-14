@@ -1,3 +1,4 @@
+# Version: 1.1.0 (Build Fix)
 ARG BASE_IMAGE=nvcr.io/nvidia/cuda:11.7.1-cudnn8-devel-ubuntu20.04
 FROM $BASE_IMAGE
 
@@ -46,10 +47,10 @@ RUN conda init bash
 
 # Set up environment for InsTaG
 RUN conda create -n instag python=3.9 -y \
- && echo "source activate instag" > ~/.bashrc \
- && . /opt/conda/etc/profile.d/conda.sh \
- && conda activate instag \
- && conda install pytorch==1.13.1 torchvision==0.14.1 cudatoolkit=11.7 -c pytorch -y
+ && echo "source activate instag" > ~/.bashrc
+
+# Install PyTorch with conda run to avoid activation issues
+RUN conda run -n instag conda install pytorch==1.13.1 torchvision==0.14.1 cudatoolkit=11.7 -c pytorch -y
 
 # Clone InsTaG repository
 RUN git lfs install \
@@ -59,51 +60,43 @@ RUN git lfs install \
 
 # Install dependencies for InsTaG
 WORKDIR /instag
-RUN . /opt/conda/etc/profile.d/conda.sh \
- && conda activate instag \
- && pip install -r requirements.txt \
- && cd /instag/submodules/diff-gaussian-rasterization && FORCE_CUDA=1 pip install -e . \
- && cd /instag/submodules/simple-knn && FORCE_CUDA=1 pip install -e . \
- && cd /instag/gridencoder && pip install -e . \
- && cd /instag/shencoder && pip install -e . \
- && pip install "git+https://github.com/facebookresearch/pytorch3d.git" \
- && pip install tensorflow-gpu==2.10.0
+RUN conda run -n instag bash -c "\
+ pip install -r requirements.txt && \
+ cd /instag/submodules/diff-gaussian-rasterization && FORCE_CUDA=1 pip install -e . && \
+ cd /instag/submodules/simple-knn && FORCE_CUDA=1 pip install -e . && \
+ cd /instag/gridencoder && pip install -e . && \
+ cd /instag/shencoder && pip install -e . && \
+ pip install \"git+https://github.com/facebookresearch/pytorch3d.git\" && \
+ pip install tensorflow-gpu==2.10.0"
 
 # Install OpenFace
-RUN . /opt/conda/etc/profile.d/conda.sh \
- && conda activate instag \
- && git clone https://github.com/TadasBaltrusaitis/OpenFace.git /tmp/OpenFace \
- && cd /tmp/OpenFace \
- && bash ./download_models.sh \
- && mkdir -p build \
- && cd build \
- && cmake -D CMAKE_BUILD_TYPE=RELEASE .. \
- && make -j4 \
- && make install \
- && cp -r /tmp/OpenFace/build/bin /instag/OpenFace \
- && cp -r /tmp/OpenFace/lib /instag/OpenFace/ \
- && cp -r /tmp/OpenFace/build/lib /instag/OpenFace/ \
- && rm -rf /tmp/OpenFace
+RUN conda run -n instag bash -c "\
+ git clone https://github.com/TadasBaltrusaitis/OpenFace.git /tmp/OpenFace && \
+ cd /tmp/OpenFace && \
+ bash ./download_models.sh && \
+ mkdir -p build && \
+ cd build && \
+ cmake -D CMAKE_BUILD_TYPE=RELEASE .. && \
+ make -j4 && \
+ make install" && \
+ cp -r /tmp/OpenFace/build/bin /instag/OpenFace && \
+ cp -r /tmp/OpenFace/lib /instag/OpenFace/ && \
+ cp -r /tmp/OpenFace/build/lib /instag/OpenFace/ && \
+ rm -rf /tmp/OpenFace
 
 # Download EasyPortrait model
-RUN . /opt/conda/etc/profile.d/conda.sh \
- && conda activate instag \
- && mkdir -p /instag/data_utils/easyportrait \
- && wget -O /instag/data_utils/easyportrait/fpn-fp-512.pth \
-    https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/easyportrait/experiments/models/fpn-fp-512.pth
+RUN mkdir -p /instag/data_utils/easyportrait && \
+    conda run -n instag bash -c "\
+    wget -O /instag/data_utils/easyportrait/fpn-fp-512.pth \
+    https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/easyportrait/experiments/models/fpn-fp-512.pth"
 
 # Run prepare script to download required models
-RUN . /opt/conda/etc/profile.d/conda.sh \
- && conda activate instag \
- && cd /instag \
- && bash scripts/prepare.sh
+RUN conda run -n instag bash -c "cd /instag && bash scripts/prepare.sh"
 
 # Create the Sapiens lite environment
-RUN . /opt/conda/etc/profile.d/conda.sh \
- && conda create -n sapiens_lite python=3.10 -y \
- && conda activate sapiens_lite \
- && conda install pytorch==2.2.1 torchvision==0.17.1 torchaudio==2.2.1 pytorch-cuda=11.7 -c pytorch -c nvidia \
- && pip install opencv-python tqdm json-tricks
+RUN conda create -n sapiens_lite python=3.10 -y && \
+    conda run -n sapiens_lite conda install pytorch==2.2.1 torchvision==0.17.1 torchaudio==2.2.1 pytorch-cuda=11.7 -c pytorch -c nvidia -y && \
+    conda run -n sapiens_lite pip install opencv-python tqdm json-tricks
 
 # Create directories for data and outputs
 RUN mkdir -p /instag/data /instag/output /instag/jobs

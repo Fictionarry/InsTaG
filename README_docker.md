@@ -245,6 +245,10 @@ The default configuration uses CUDA 11.7 for the main container and CUDA 12.1 fo
 
 ### Common Issues
 
+- **Docker build failures with conda activation**:
+  - If you encounter errors like `process "/bin/sh -c conda create -n instag python=3.9 -y && echo \"source activate instag\" > ~/.bashrc && . /opt/conda/etc/profile.d/conda.sh && conda activate instag && conda install pytorch..."` did not complete successfully, this is due to conda activation issues in non-interactive shells.
+  - Fix: Use `conda run -n instag` instead of activating the environment with `conda activate instag` in the Dockerfile.
+
 - **"Unable to find teeth mask" error**:
   - Make sure you've downloaded the EasyPortrait model:
     ```bash
