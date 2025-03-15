@@ -1,0 +1,60 @@
+FROM nvidia/cuda:12.1.1-cudnn8-devel-ubuntu20.04
+
+# Prevent timezone questions during package installations
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install basic dependencies
+RUN apt-get update && apt-get install -y \
+    git \
+    python3.10 \
+    python3.10-dev \
+    python3-pip \
+    wget \
+    ffmpeg \
+    libsm6 \
+    libxext6 \
+    libgl1-mesa-glx \
+    git-lfs \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set Python 3.10 as default
+RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.10 1 \
+    && update-alternatives --install /usr/bin/python python /usr/bin/python3.10 1 \
+    && python -m pip install --upgrade pip
+
+# Install Miniconda
+RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O /tmp/miniconda.sh \
+    && bash /tmp/miniconda.sh -b -p /opt/conda \
+    && rm /tmp/miniconda.sh
+
+# Add conda to path
+ENV PATH="/opt/conda/bin:${PATH}"
+
+# Create a working directory
+WORKDIR /app
+
+# Create sapiens_lite environment with required dependencies
+RUN conda create -n sapiens_lite python=3.10 -y \
+    && conda install -n sapiens_lite pytorch==2.2.1 torchvision==0.17.1 torchaudio==2.2.1 pytorch-cuda=12.1 -c pytorch -c nvidia \
+    && conda run -n sapiens_lite pip install opencv-python tqdm json-tricks
+
+# Create directories for data and outputs
+RUN mkdir -p /app/data /app/output /app/data_utils/sapiens/checkpoint
+
+# Initialize git-lfs for Sapiens models
+RUN git lfs install
+
+# Copy only necessary scripts
+COPY data_utils/sapiens/lite /app/data_utils/sapiens/lite
+COPY data_utils/sapiens/run.sh /app/data_utils/sapiens/run.sh
+COPY scripts/prepare_sapiens.sh /app/scripts/prepare_sapiens.sh
+
+# Add a script to activate the conda environment when starting the container
+RUN echo '#!/bin/bash\neval "$(conda shell.bash hook)"\nconda activate sapiens_lite\nexec "$@"' > /app/entrypoint.sh \
+    && chmod +x /app/entrypoint.sh
+
+ENTRYPOINT ["/app/entrypoint.sh"]
+
+# Default command keeps the container running
+CMD ["bash"] 

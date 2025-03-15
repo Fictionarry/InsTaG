@@ -1,0 +1,49 @@
+# Version: 1.0.0 (CI Optimized)
+# This is a CI-optimized Dockerfile for GitHub Actions validation
+# It skips time-consuming steps while still verifying build correctness
+FROM nvcr.io/nvidia/cuda:11.7.1-cudnn8-devel-ubuntu20.04
+
+# Install system dependencies (minimal set)
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+    git wget cmake build-essential \
+    libopencv-dev ffmpeg libsm6 libxext6 libgl1-mesa-glx \
+    libsndfile1 portaudio19-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Miniconda
+RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O /tmp/miniconda.sh && \
+    bash /tmp/miniconda.sh -b -p /opt/conda && \
+    rm /tmp/miniconda.sh
+
+# Add conda to PATH
+ENV PATH="/opt/conda/bin:${PATH}"
+
+# Initialize conda in bash
+RUN conda init bash
+
+# Clone InsTaG repository (shallow clone to speed up)
+RUN git clone --depth 1 https://github.com/Fictionarry/InsTaG.git /instag
+
+# Set up conda environment with PyTorch
+WORKDIR /instag
+RUN conda config --append channels conda-forge && \
+    conda config --append channels nvidia && \
+    conda create -n instag python=3.9 cudatoolkit=11.7 pytorch=1.13.1 torchvision=0.14.1 torchaudio -c pytorch -c nvidia -y && \
+    echo "source activate instag" > ~/.bashrc
+
+# Install only core dependencies
+RUN conda run -n instag pip install numpy==1.24.3 pillow==9.5.0 scipy opencv-python tqdm && \
+    conda run -n instag pip install -r requirements.txt
+
+# Create mock directories and files for validating scripts
+RUN mkdir -p /instag/data /instag/output && \
+    mkdir -p /instag/OpenFace/bin && \
+    echo '#!/bin/bash\necho "OpenFace mock for CI"' > /instag/OpenFace/bin/FeatureExtraction && \
+    chmod +x /instag/OpenFace/bin/FeatureExtraction
+
+# Set up environment paths
+ENV PATH="/opt/conda/bin:/instag/OpenFace/bin:${PATH}"
+
+# Validation test command that will run in CI
+CMD ["conda", "run", "-n", "instag", "python", "-c", "import torch; print(f'PyTorch {torch.__version__} with CUDA {torch.version.cuda if torch.cuda.is_available() else \"N/A\"}'); import numpy; import cv2; print('Core imports successful')"]

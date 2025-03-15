@@ -1,0 +1,24 @@
+numpy==1.24.3
+pillow==9.5.0
+scipy
+tensorboard
+tensorboardX
+pandas
+tqdm
+matplotlib
+rich
+packaging
+scikit-learn
+face_alignment
+python_speech_features
+numba
+resampy
+pyaudio
+soundfile
+configargparse
+lpips
+imageio-ffmpeg
+librosa
+transformers==4.30.2
+# Removed mmcv-full as it requires specific CUDA setup
+prettytable
